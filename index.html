@@ -46,16 +46,32 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
     <style>
+        :root {
+            --primary: #7c3aed;
+            --primary-hover: #6d28d9;
+            --secondary: #4f46e5;
+            --accent: #f97316;
+            --background: linear-gradient(135deg, #e0e7ff, #f3e8ff, #fce7f3);
+            --text-dark: #1e293b;
+            --text-light: #f8fafc;
+            --card-gradient: linear-gradient(135deg, #7c3aed, #4f46e5);
+        }
+
         body {
             overflow-x: hidden;
-            background: linear-gradient(135deg, #e0e7ff, #f3e8ff);
+            background: var(--background);
+            background-attachment: fixed;
         }
+
         .tilt {
-            transition: transform 0.3s;
+            transition: transform 0.3s, box-shadow 0.3s;
         }
+
         .tilt:hover {
-            transform: perspective(1000px) rotateX(5deg) rotateY(5deg) scale(1.05);
+            transform: perspective(1000px) rotateX(2deg) rotateY(2deg) scale(1.03);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
         }
+
         #particles-js {
             position: fixed;
             width: 100%;
@@ -63,13 +79,62 @@
             background: transparent;
             z-index: -1;
         }
+
         .animate-pulse-slow {
             animation: pulse 2s infinite;
         }
+
         @keyframes pulse {
             0% { transform: scale(1); }
             50% { transform: scale(1.05); }
             100% { transform: scale(1); }
+        }
+
+        .animate-float {
+            animation: float 5s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .animate-fade-in {
+            opacity: 0;
+            animation: fadeIn 1s ease-in forwards;
+        }
+
+        @keyframes fadeIn {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+
+        .card-hover:hover {
+            transform: translateY(-10px);
+        }
+
+        .mobile-menu {
+            transition: all 0.3s ease;
+        }
+
+        .gradient-text {
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .feature-card {
+            background: var(--card-gradient);
+            border-radius: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.05);
         }
     </style>
 </head>
@@ -77,70 +142,198 @@
     <div id="particles-js"></div>
 
     <!-- Header -->
-    <header class="bg-white shadow-md py-4 relative z-10">
+    <header class="bg-white/90 backdrop-blur-md shadow-lg py-4 sticky top-0 z-50">
         <div class="container mx-auto flex justify-between items-center px-6">
             <div class="flex items-center space-x-2">
-                <svg class="w-8 h-8 text-purple-600 animate-pulse-slow" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <svg class="w-8 h-8 text-indigo-600 animate-pulse-slow" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg>
-                <h1 class="text-2xl font-bold text-purple-600">VelocitySpot</h1>
+                <h1 class="text-2xl font-bold gradient-text">VelocitySpot</h1>
             </div>
-            <nav class="space-x-4">
-                <a href="#home" class="text-gray-600 hover:text-purple-600">Home</a>
-                <a href="#features" class="text-gray-600 hover:text-purple-600">Features</a>
-                <a href="#contact" class="text-gray-600 hover:text-purple-600">Contact</a>
-                <a href="/signin" class="bg-purple-600 text-white px-4 py-2 rounded-full hover:bg-purple-700">Sign In</a>
+
+            <!-- Desktop Navigation -->
+            <nav class="hidden md:flex space-x-6">
+                <a href="#home" class="text-gray-600 hover:text-indigo-600 transition duration-300">Home</a>
+                <a href="#features" class="text-gray-600 hover:text-indigo-600 transition duration-300">Features</a>
+                <a href="#contact" class="text-gray-600 hover:text-indigo-600 transition duration-300">Contact</a>
+                <a href="https://velocityspot.com/index.php" class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-5 py-2 rounded-full hover:shadow-lg transition duration-300">Sign In</a>
             </nav>
+
+            <!-- Mobile Menu Button -->
+            <div class="md:hidden">
+                <button id="menu-toggle" class="outline-none">
+                    <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation Menu -->
+        <div id="mobile-menu" class="mobile-menu hidden md:hidden bg-white shadow-lg absolute w-full left-0 top-full z-40 transform -translate-y-full opacity-0">
+            <div class="container mx-auto px-6 py-4 space-y-4">
+                <a href="#home" class="block text-gray-600 hover:text-indigo-600 py-2">Home</a>
+                <a href="#features" class="block text-gray-600 hover:text-indigo-600 py-2">Features</a>
+                <a href="#contact" class="block text-gray-600 hover:text-indigo-600 py-2">Contact</a>
+                <a href="https://velocityspot.com/index.php" class="block bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-5 py-2 rounded-full hover:shadow-lg text-center">Sign In</a>
+            </div>
         </div>
     </header>
 
     <!-- Hero Section (Home) -->
-    <section id="home" class="container mx-auto px-6 py-20 text-center relative z-10">
-        <h2 class="text-5xl font-bold text-gray-800 mb-6 animate-fade-in">Automate Your Crypto Trading</h2>
-        <p class="text-gray-600 mb-8 max-w-2xl mx-auto">Unlock the power of VelocitySpot, the most advanced trading bot for cryptocurrency markets with AI-driven profits.</p>
-        <a href="https://velocityspot.com/" class="bg-purple-600 text-white px-8 py-4 rounded-full hover:bg-purple-700 tilt">Access the Bot Now</a>
+    <section id="home" class="container mx-auto px-6 py-20 md:py-32 text-center relative z-10">
+        <div class="max-w-4xl mx-auto">
+            <h2 class="text-4xl md:text-6xl font-bold mb-6 animate-fade-in">
+                <span class="gradient-text">Automate</span> Your Crypto Trading
+            </h2>
+            <p class="text-gray-600 mb-8 text-lg md:text-xl max-w-2xl mx-auto">Unlock the power of VelocitySpot, the most advanced trading bot for cryptocurrency markets with AI-driven profits.</p>
+            <div class="space-y-4 md:space-y-0 md:space-x-4">
+                <a href="https://velocityspot.com/" class="inline-block bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-8 py-4 rounded-full hover:shadow-xl transform hover:scale-105 transition duration-300">
+                    Access the Bot Now
+                </a>
+                <a href="#features" class="inline-block bg-white text-indigo-600 border border-indigo-600 px-8 py-4 rounded-full hover:shadow-lg transform hover:scale-105 transition duration-300 mt-4 md:mt-0">
+                    Learn More
+                </a>
+            </div>
+        </div>
+
+        <!-- Floating illustration -->
+        <div class="mt-16 max-w-2xl mx-auto animate-float">
+            <div class="relative">
+                <div class="absolute inset-0 bg-gradient-to-r from-indigo-400 to-purple-500 opacity-20 blur-2xl rounded-full"></div>
+                <div class="bg-white/80 backdrop-blur rounded-2xl shadow-xl p-6 relative">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="flex flex-col items-center space-y-2 p-4">
+                            <span class="text-5xl font-bold text-indigo-600">247%</span>
+                            <span class="text-gray-600">Average ROI</span>
+                        </div>
+                        <div class="flex flex-col items-center space-y-2 p-4">
+                            <span class="text-5xl font-bold text-purple-600">24/7</span>
+                            <span class="text-gray-600">Trading Bot</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </section>
 
     <!-- Features Section -->
-    <section id="features" class="bg-white py-20 relative z-10">
+    <section id="features" class="py-20 relative z-10">
         <div class="container mx-auto px-6">
-            <h3 class="text-4xl font-bold text-gray-800 text-center mb-12 animate-fade-in">Why VelocitySpot?</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
-                <div class="bg-purple-600 text-white p-6 rounded-lg shadow-lg text-center tilt hover:shadow-xl transition-shadow">
-                    <h4 class="text-xl font-semibold mb-2">Smart Trading</h4>
-                    <p>AI-powered algorithms for maximum profits.</p>
+            <h3 class="text-3xl md:text-4xl font-bold text-center mb-4 animate-fade-in">Why VelocitySpot?</h3>
+            <p class="text-center text-gray-600 max-w-2xl mx-auto mb-12">Experience the most advanced crypto trading platform with features designed to maximize your profits.</p>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+                <!-- Feature Cards -->
+                <div class="feature-card p-6 text-white card-hover">
+                    <div class="flex items-center mb-4">
+                        <svg class="w-8 h-8 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                        <h4 class="text-xl font-semibold">Smart Trading</h4>
+                    </div>
+                    <p class="opacity-90">AI-powered algorithms for maximum profits with advanced pattern recognition.</p>
                 </div>
-                <div class="bg-purple-600 text-white p-6 rounded-lg shadow-lg text-center tilt hover:shadow-xl transition-shadow">
-                    <h4 class="text-xl font-semibold mb-2">24/7 Trading</h4>
-                    <p>Never miss a market opportunity.</p>
+
+                <div class="feature-card p-6 text-white card-hover">
+                    <div class="flex items-center mb-4">
+                        <svg class="w-8 h-8 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <h4 class="text-xl font-semibold">24/7 Trading</h4>
+                    </div>
+                    <p class="opacity-90">Never miss a market opportunity with continuous automated trading.</p>
                 </div>
-                <div class="bg-purple-600 text-white p-6 rounded-lg shadow-lg text-center tilt hover:shadow-xl transition-shadow">
-                    <h4 class="text-xl font-semibold mb-2">Secure</h4>
-                    <p>Industry-leading security for your assets.</p>
+
+                <div class="feature-card p-6 text-white card-hover">
+                    <div class="flex items-center mb-4">
+                        <svg class="w-8 h-8 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                        </svg>
+                        <h4 class="text-xl font-semibold">Secure</h4>
+                    </div>
+                    <p class="opacity-90">Industry-leading security with encryption and advanced protection for your assets.</p>
                 </div>
-                <div class="bg-purple-600 text-white p-6 rounded-lg shadow-lg text-center tilt hover:shadow-xl transition-shadow">
-                    <h4 class="text-xl font-semibold mb-2">Real-Time</h4>
-                    <p>Instant updates and trading execution.</p>
+
+                <div class="feature-card p-6 text-white card-hover">
+                    <div class="flex items-center mb-4">
+                        <svg class="w-8 h-8 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                        <h4 class="text-xl font-semibold">Real-Time Analytics</h4>
+                    </div>
+                    <p class="opacity-90">Instant updates, live charting, and immediate trading execution.</p>
                 </div>
-                <div class="bg-purple-600 text-white p-6 rounded-lg shadow-lg text-center tilt hover:shadow-xl transition-shadow">
-                    <h4 class="text-xl font-semibold mb-2">Portfolio Management</h4>
-                    <p>Track and optimize your crypto portfolio effortlessly.</p>
+
+                <div class="feature-card p-6 text-white card-hover">
+                    <div class="flex items-center mb-4">
+                        <svg class="w-8 h-8 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                        </svg>
+                        <h4 class="text-xl font-semibold">Custom Strategies</h4>
+                    </div>
+                    <p class="opacity-90">Tailor trading strategies to fit your goals with full customization options.</p>
                 </div>
-                <div class="bg-purple-600 text-white p-6 rounded-lg shadow-lg text-center tilt hover:shadow-xl transition-shadow">
-                    <h4 class="text-xl font-semibold mb-2">Custom Strategies</h4>
-                    <p>Tailor trading strategies to fit your goals.</p>
+
+                <div class="feature-card p-6 text-white card-hover">
+                    <div class="flex items-center mb-4">
+                        <svg class="w-8 h-8 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                        </svg>
+                        <h4 class="text-xl font-semibold">Multi-Exchange</h4>
+                    </div>
+                    <p class="opacity-90">Trade across multiple exchanges seamlessly from a single dashboard.</p>
                 </div>
-                <div class="bg-purple-600 text-white p-6 rounded-lg shadow-lg text-center tilt hover:shadow-xl transition-shadow">
-                    <h4 class="text-xl font-semibold mb-2">Detailed Analytics</h4>
-                    <p>Comprehensive insights into your trading performance.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="bg-white/80 backdrop-blur py-20 relative z-10">
+        <div class="container mx-auto px-6">
+            <h3 class="text-3xl md:text-4xl font-bold text-center mb-12 animate-fade-in">Trusted by Traders</h3>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition duration-300">
+                    <div class="flex items-center mb-4">
+                        <div class="flex text-amber-400">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3 .921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784 .57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81 .588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24 .588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3 .921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784 .57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81 .588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 mb-4">"VelocitySpot has completely transformed my trading. The AI algorithms have consistently outperformed my manual trading by 37% in just three months."</p>
+                    <div class="font-medium">Sarah K., Crypto Investor</div>
                 </div>
-                <div class="bg-purple-600 text-white p-6 rounded-lg shadow-lg text-center tilt hover:shadow-xl transition-shadow">
-                    <h4 class="text-xl font-semibold mb-2">Multi-Exchange Support</h4>
-                    <p>Trade across multiple exchanges seamlessly.</p>
+
+                <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition duration-300">
+                    <div class="flex items-center mb-4">
+                        <div class="flex text-amber-400">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24 .588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3 .921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784 .57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81 .588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24 .588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3 .921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784 .57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81 .588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24 .588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3 .921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784 .57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81 .588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24 .588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3 .921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784 .57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81 .588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24 .588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3 .921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784 .57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81 .588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 mb-4">"The multi-exchange support is a game-changer. I can manage all my portfolios from one dashboard with real-time analytics that help me make informed decisions."</p>
+                    <div class="font-medium">Marcus T., Day Trader</div>
                 </div>
-                <div class="bg-purple-600 text-white p-6 rounded-lg shadow-lg text-center tilt hover:shadow-xl transition-shadow">
-                    <h4 class="text-xl font-semibold mb-2">Automated Risk Management</h4>
-                    <p>Protect your investments with automated risk controls.</p>
+
+                <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition duration-300">
+                    <div class="flex items-center mb-4">
+                        <div class="flex text-amber-400">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24 .588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3 .921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784 .57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81 .588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24 .588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3 .921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784 .57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81 .588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24 .588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3 .921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784 .57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81 .588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24 .588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3 .921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784 .57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81 .588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24 .588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3 .921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784 .57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81 .588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 mb-4">"I was skeptical at first, but the results speak for themselves. The automated risk management has protected my investments during market downturns."</p>
+                    <div class="font-medium">David R., Long-term Investor</div>
                 </div>
             </div>
         </div>
@@ -148,31 +341,42 @@
 
     <!-- Contact Section -->
     <section id="contact" class="container mx-auto px-6 py-20 relative z-10">
-        <h3 class="text-4xl font-bold text-gray-800 text-center mb-12 animate-fade-in">Get in Touch</h3>
-        <div class="max-w-lg mx-auto bg-white p-8 rounded-lg shadow-lg">
-            <form class="space-y-4">
+        <h3 class="text-3xl md:text-4xl font-bold text-center mb-12 animate-fade-in">Get in Touch</h3>
+        <div class="max-w-lg mx-auto bg-white/80 backdrop-blur p-8 rounded-xl shadow-lg">
+            <form class="space-y-6">
                 <div>
-                    <label class="block text-gray-600 mb-2" for="name">Name</label>
-                    <input type="text" id="name" class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600" placeholder="Your name">
+                    <label class="block text-gray-600 mb-2 font-medium" for="name">Name</label>
+                    <input type="text" id="name" class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600" placeholder="Your name">
                 </div>
                 <div>
-                    <label class="block text-gray-600 mb-2" for="email">Email</label>
-                    <input type="email" id="email" class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600" placeholder="Your email">
+                    <label class="block text-gray-600 mb-2 font-medium" for="email">Email</label>
+                    <input type="email" id="email" class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600" placeholder="Your email">
                 </div>
                 <div>
-                    <label class="block text-gray-600 mb-2" for="message">Message</label>
-                    <textarea id="message" class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600" rows="4" placeholder="Your message"></textarea>
+                    <label class="block text-gray-600 mb-2 font-medium" for="message">Message</label>
+                    <textarea id="message" class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600" rows="4" placeholder="Your message"></textarea>
                 </div>
-                <button type="submit" class="w-full bg-purple-600 text-white px-6 py-3 rounded-full hover:bg-purple-700 tilt">Send Message</button>
+                <button type="submit" class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-3 rounded-full hover:shadow-lg tilt">Send Message</button>
             </form>
         </div>
     </section>
 
-    <!-- Footer -->
-    <footer class="bg-purple-600 text-white py-6 relative z-10">
+    <!-- Call to Action Banner -->
+    <section class="bg-gradient-to-r from-indigo-600 to-purple-600 py-16 relative z-10">
         <div class="container mx-auto px-6 text-center">
-            <p>© 2025 VelocitySpot. All rights reserved.</p>
-            <div class="mt-4 space-x-4">
+            <h3 class="text-3xl md:text-4xl font-bold text-white mb-6 animate-fade-in">Ready to Transform Your Trading?</h3>
+            <p class="text-white/90 mb-8 max-w-2xl mx-auto">Join thousands of traders who trust VelocitySpot to automate their crypto trading and maximize profits.</p>
+            <a href="https://velocityspot.com/" class="inline-block bg-white text-indigo-600 px-8 py-4 rounded-full hover:shadow-xl transform hover:scale-105 transition duration-300">
+                Try VelocitySpot Now
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-indigo-800 text-white py-8 relative z-10">
+        <div class="container mx-auto px-6 text-center">
+            <p class="mb-4">© 2025 VelocitySpot. All rights reserved.</p>
+            <div class="space-x-4">
                 <a href="#" class="hover:underline">Privacy Policy</a>
                 <a href="#" class="hover:underline">Terms of Service</a>
                 <a href="#contact" class="hover:underline">Contact Us</a>
@@ -184,11 +388,11 @@
         particlesJS("particles-js", {
             particles: {
                 number: { value: 80, density: { enable: true, value_area: 800 } },
-                color: { value: "#a855f7" },
+                color: { value: "#7c3aed" },
                 shape: { type: "circle" },
                 opacity: { value: 0.5, random: true },
                 size: { value: 3, random: true },
-                line_linked: { enable: true, distance: 150, color: "#a855f7", opacity: 0.4 },
+                line_linked: { enable: true, distance: 150, color: "#7c3aed", opacity: 0.4 },
                 move: { enable: true, speed: 2, direction: "none", random: true }
             },
             interactivity: {
@@ -202,9 +406,17 @@
             fadeElements.forEach((el, index) => {
                 el.style.opacity = "0";
                 setTimeout(() => {
-                    el.style.transition = "opacity 1s ease-in";
                     el.style.opacity = "1";
                 }, index * 200);
+            });
+
+            const menuToggle = document.getElementById("menu-toggle");
+            const mobileMenu = document.getElementById("mobile-menu");
+
+            menuToggle.addEventListener("click", () => {
+                mobileMenu.classList.toggle("hidden");
+                mobileMenu.classList.toggle("translate-y-full");
+                mobileMenu.classList.toggle("opacity-0");
             });
         });
     </script>
