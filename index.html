@@ -1,0 +1,212 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VelocitySpot - Automate Your Crypto Trading</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
+    <style>
+        body {
+            overflow-x: hidden;
+            background: linear-gradient(135deg, #e0e7ff, #f3e8ff);
+        }
+        .tilt {
+            transition: transform 0.3s;
+        }
+        .tilt:hover {
+            transform: perspective(1000px) rotateX(5deg) rotateY(5deg) scale(1.05);
+        }
+        #particles-js {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            z-index: -1;
+        }
+        .animate-pulse-slow {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body class="font-sans text-gray-800">
+    <div id="particles-js"></div>
+
+    <!-- Header -->
+    <header class="bg-white shadow-md py-4 relative z-10">
+        <div class="container mx-auto flex justify-between items-center px-6">
+            <div class="flex items-center space-x-2">
+                <svg class="w-8 h-8 text-purple-600 animate-pulse-slow" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <h1 class="text-2xl font-bold text-purple-600">VelocitySpot</h1>
+            </div>
+            <nav class="space-x-4">
+                <a href="#home" class="text-gray-600 hover:text-purple-600">Home</a>
+                <a href="#features" class="text-gray-600 hover:text-purple-600">Features</a>
+                <a href="#contact" class="text-gray-600 hover:text-purple-600">Contact</a>
+                <a href="/signin" class="bg-purple-600 text-white px-4 py-2 rounded-full hover:bg-purple-700">Sign In</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section (Home) -->
+    <section id="home" class="container mx-auto px-6 py-20 text-center relative z-10">
+        <h2 class="text-5xl font-bold text-gray-800 mb-6 animate-fade-in">Automate Your Crypto Trading</h2>
+        <p class="text-gray-600 mb-8 max-w-2xl mx-auto">Unlock the power of VelocitySpot, the most advanced trading bot for cryptocurrency markets with AI-driven profits.</p>
+        <a href="https://velocityspot.com/" class="bg-purple-600 text-white px-8 py-4 rounded-full hover:bg-purple-700 tilt">Access the Bot Now</a>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="bg-white py-20 relative z-10">
+        <div class="container mx-auto px-6">
+            <h3 class="text-4xl font-bold text-gray-800 text-center mb-12 animate-fade-in">Why VelocitySpot?</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
+                <div class="bg-purple-600 text-white p-6 rounded-lg shadow-lg text-center tilt hover:shadow-xl transition-shadow">
+                    <h4 class="text-xl font-semibold mb-2">Smart Trading</h4>
+                    <p>AI-powered algorithms for maximum profits.</p>
+                </div>
+                <div class="bg-purple-600 text-white p-6 rounded-lg shadow-lg text-center tilt hover:shadow-xl transition-shadow">
+                    <h4 class="text-xl font-semibold mb-2">24/7 Trading</h4>
+                    <p>Never miss a market opportunity.</p>
+                </div>
+                <div class="bg-purple-600 text-white p-6 rounded-lg shadow-lg text-center tilt hover:shadow-xl transition-shadow">
+                    <h4 class="text-xl font-semibold mb-2">Secure</h4>
+                    <p>Industry-leading security for your assets.</p>
+                </div>
+                <div class="bg-purple-600 text-white p-6 rounded-lg shadow-lg text-center tilt hover:shadow-xl transition-shadow">
+                    <h4 class="text-xl font-semibold mb-2">Real-Time</h4>
+                    <p>Instant updates and trading execution.</p>
+                </div>
+                <div class="bg-purple-600 text-white p-6 rounded-lg shadow-lg text-center tilt hover:shadow-xl transition-shadow">
+                    <h4 class="text-xl font-semibold mb-2">Portfolio Management</h4>
+                    <p>Track and optimize your crypto portfolio effortlessly.</p>
+                </div>
+                <div class="bg-purple-600 text-white p-6 rounded-lg shadow-lg text-center tilt hover:shadow-xl transition-shadow">
+                    <h4 class="text-xl font-semibold mb-2">Custom Strategies</h4>
+                    <p>Tailor trading strategies to fit your goals.</p>
+                </div>
+                <div class="bg-purple-600 text-white p-6 rounded-lg shadow-lg text-center tilt hover:shadow-xl transition-shadow">
+                    <h4 class="text-xl font-semibold mb-2">Detailed Analytics</h4>
+                    <p>Comprehensive insights into your trading performance.</p>
+                </div>
+                <div class="bg-purple-600 text-white p-6 rounded-lg shadow-lg text-center tilt hover:shadow-xl transition-shadow">
+                    <h4 class="text-xl font-semibold mb-2">Multi-Exchange Support</h4>
+                    <p>Trade across multiple exchanges seamlessly.</p>
+                </div>
+                <div class="bg-purple-600 text-white p-6 rounded-lg shadow-lg text-center tilt hover:shadow-xl transition-shadow">
+                    <h4 class="text-xl font-semibold mb-2">Automated Risk Management</h4>
+                    <p>Protect your investments with automated risk controls.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="container mx-auto px-6 py-20 relative z-10">
+        <h3 class="text-4xl font-bold text-gray-800 text-center mb-12 animate-fade-in">Get in Touch</h3>
+        <div class="max-w-lg mx-auto bg-white p-8 rounded-lg shadow-lg">
+            <form class="space-y-4">
+                <div>
+                    <label class="block text-gray-600 mb-2" for="name">Name</label>
+                    <input type="text" id="name" class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600" placeholder="Your name">
+                </div>
+                <div>
+                    <label class="block text-gray-600 mb-2" for="email">Email</label>
+                    <input type="email" id="email" class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600" placeholder="Your email">
+                </div>
+                <div>
+                    <label class="block text-gray-600 mb-2" for="message">Message</label>
+                    <textarea id="message" class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600" rows="4" placeholder="Your message"></textarea>
+                </div>
+                <button type="submit" class="w-full bg-purple-600 text-white px-6 py-3 rounded-full hover:bg-purple-700 tilt">Send Message</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-purple-600 text-white py-6 relative z-10">
+        <div class="container mx-auto px-6 text-center">
+            <p>© 2025 VelocitySpot. All rights reserved.</p>
+            <div class="mt-4 space-x-4">
+                <a href="#" class="hover:underline">Privacy Policy</a>
+                <a href="#" class="hover:underline">Terms of Service</a>
+                <a href="#contact" class="hover:underline">Contact Us</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        particlesJS("particles-js", {
+            particles: {
+                number: { value: 80, density: { enable: true, value_area: 800 } },
+                color: { value: "#a855f7" },
+                shape: { type: "circle" },
+                opacity: { value: 0.5, random: true },
+                size: { value: 3, random: true },
+                line_linked: { enable: true, distance: 150, color: "#a855f7", opacity: 0.4 },
+                move: { enable: true, speed: 2, direction: "none", random: true }
+            },
+            interactivity: {
+                detect_on: "canvas",
+                events: { onhover: { enable: true, mode: "repulse" }, onclick: { enable: true, mode: "push" } }
+            }
+        });
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const fadeElements = document.querySelectorAll(".animate-fade-in");
+            fadeElements.forEach((el, index) => {
+                el.style.opacity = "0";
+                setTimeout(() => {
+                    el.style.transition = "opacity 1s ease-in";
+                    el.style.opacity = "1";
+                }, index * 200);
+            });
+        });
+    </script>
+</body>
+</html>
